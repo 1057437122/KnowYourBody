@@ -1,42 +1,55 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
+
     <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
+
     <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <input v-model="playInterval" :disabled="isPlaying" />
+    <button @click="start" :disabled="isPlaying">Start</button>
+    <button @click="stop" :disabled="!isPlaying">Stop</button>
   </div>
 </template>
 
 <script>
+import { Howl } from "howler";
 export default {
-  name: 'HelloWorld',
   props: {
     msg: String
+  },
+  data() {
+    return {
+      name: "MyFace",
+      interval: null,
+      musics: ["boca", "nariz", "oreja", "pelo", "pierna"],
+      isPlaying: false,
+      playInterval: 3
+    };
+  },
+  methods: {
+    start() {
+      // alert("abc");
+      this.interval = setInterval(() => {
+        //create a random number from 0 to 4
+        const num = Math.floor(Math.random() * 5);
+        const path = `/${this.musics[num]}.m4a`;
+        this.playSound(path);
+      }, 1000 * this.playInterval);
+      this.isPlaying = true;
+    },
+    stop() {
+      clearInterval(this.interval);
+      this.isPlaying = false;
+    },
+    playSound(filePath) {
+      var sound = new Howl({
+        src: filePath,
+        volume: 0.5
+      });
+      sound.play();
+    }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
