@@ -1,21 +1,21 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <el-container v-for="(item,index) in imageContainer" :key="item">
-      <el-col :span="8">
+    <el-container>
+      <el-col :span="8" v-for="(item,index) in randImags" :key="item">
         <el-image style="width: 100px; height: 100px" src="./images/boca.png" fit="fit"></el-image>
-      </el-col>
-      <el-col :span="8">
-        <el-image style="width: 100px; height: 100px" src="./images/boca.png" fit="fit"></el-image>
-      </el-col>
-      <el-col :span="8">
-        <el-image style="width: 100px; height: 100px" src="./images/boca.png" fit="fit"></el-image>
+        <div v-if="index % 3 ==0"></div>
       </el-col>
     </el-container>
-
-    <input v-model="playInterval" :disabled="isPlaying" />
-    <button @click="start" :disabled="isPlaying">Start</button>
-    <button @click="stop" :disabled="!isPlaying">Stop</button>
+    <el-form ref="form" label-width="100px">
+      <el-form-item label="间隔时间">
+        <el-input placeholder="请输入间隔时间" v-model="playInterval" :disabled="isPlaying"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="start" :disabled="isPlaying" type="primary">开始</el-button>
+        <el-button @click="stop" :disabled="!isPlaying" type="danger">结束</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -33,16 +33,13 @@ export default {
       parts: ["boca", "nariz", "oreja", "pelo", "pierna"],
       isPlaying: false,
       playInterval: 3,
-      randImags: [],
-      imageContainer: 0
+      randImags: []
     };
   },
   mounted() {
     //
     this.randImags = _.shuffle(this.parts);
     console.log(this.randImags);
-    debugger;
-    this.imageContainer = Math.ceil(this.randImags.length / 3);
   },
   methods: {
     start() {
