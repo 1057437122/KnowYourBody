@@ -1,19 +1,26 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <el-container>
-      <el-col :span="8" v-for="(item,index) in randImags" :key="item">
-        <el-image style="width: 100px; height: 100px" src="./images/boca.png" fit="fit"></el-image>
-        <div v-if="index % 3 ==0"></div>
-      </el-col>
-    </el-container>
+    <el-row>
+      <div v-for="(item,index) in randImags" :key="item">
+        <el-col :span="8">
+          <el-image
+            @click="setChoice(item)"
+            style="width: 100px; height: 100px"
+            :src="'./images/'+item+'.png'"
+            fit="fit"
+          ></el-image>
+        </el-col>
+      </div>
+    </el-row>
+
     <el-form ref="form" label-width="100px">
       <el-form-item label="间隔时间">
         <el-input placeholder="请输入间隔时间" v-model="playInterval" :disabled="isPlaying"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button @click="start" :disabled="isPlaying" type="primary">开始</el-button>
-        <el-button @click="stop" :disabled="!isPlaying" type="danger">结束</el-button>
+        <el-button @click="start" :disabled="isPlaying" type="primary">{{$t("start")}}</el-button>
+        <el-button @click="stop" :disabled="!isPlaying" type="danger">{{$t("stop")}}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -30,23 +37,29 @@ export default {
     return {
       name: "MyFace",
       interval: null,
-      parts: ["boca", "nariz", "oreja", "pelo", "pierna"],
+      parts: ["boca", "nariz", "oreja", "mano", "ojo", "pierna", "pie"],
       isPlaying: false,
       playInterval: 3,
-      randImags: []
+      randImags: [],
+      containerLength: 0,
+      answer: null,
+      isAnswered: false
     };
   },
   mounted() {
     //
     this.randImags = _.shuffle(this.parts);
+    this.containerLength = Math.ceil(this.randImags.length / 3);
   },
   methods: {
     start() {
       // alert("abc");
       this.interval = setInterval(() => {
+        this.isAnswered = false;
         //create a random number from 0 to 4
         const num = Math.floor(Math.random() * 5);
         const path = `/sounds/${this.parts[num]}.m4a`;
+        this.answer = this.parts[num];
         this.playSound(path);
       }, 1000 * this.playInterval);
       this.isPlaying = true;
@@ -61,6 +74,36 @@ export default {
         volume: 0.5
       });
       sound.play();
+    },
+    setChoice(item) {
+      console.log(item);
+
+      if (this.isPlaying) {
+        if (this.isAnswered) {
+          this.$notify({
+            title: this.$t("isAnswered"),
+            type: "warning"
+          });
+        } else {
+          if (this.answer === item) {
+            this.$notify({
+              title: this.$t("correct"),
+              type: "success"
+            });
+          } else {
+            this.$notify({
+              title: this.$t("wrong"),
+              type: "error"
+            });
+          }
+          this.isAnswered = true;
+        }
+      } else {
+        this.$notify({
+          title: this.$t("pleaseStartFirst"),
+          type: "warning"
+        });
+      }
     }
   }
 };
