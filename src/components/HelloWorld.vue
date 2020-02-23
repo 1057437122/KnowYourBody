@@ -39,7 +39,6 @@ export default {
   mounted() {
     //
     this.randImags = _.shuffle(this.parts);
-    console.log(this.randImags);
   },
   methods: {
     start() {
