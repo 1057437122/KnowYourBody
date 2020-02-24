@@ -1,8 +1,8 @@
 <template>
-  <div class="hello">
+  <div class="teacherSay">
     <h1>{{ msg }}</h1>
     <el-row>
-      <div v-for="(item,index) in randImags" :key="item">
+      <div v-for="item in randImags" :key="item">
         <el-col :span="8">
           <el-image
             @click="setChoice(item)"
@@ -15,8 +15,12 @@
     </el-row>
 
     <el-form ref="form" label-width="100px">
-      <el-form-item label="间隔时间">
-        <el-input placeholder="请输入间隔时间" v-model="playInterval" :disabled="isPlaying"></el-input>
+      <el-form-item :label="$t('intervalTime')">
+        <el-input
+          :placeholder="$t('pleaseInputIntervalTime')"
+          v-model="playInterval"
+          :disabled="isPlaying"
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="start" :disabled="isPlaying" type="primary">{{$t("start")}}</el-button>
@@ -43,7 +47,10 @@ export default {
       randImags: [],
       containerLength: 0,
       answer: null,
-      isAnswered: false
+      isAnswered: false,
+      items: [],
+      lastItem: null,
+      setSkip: true // if without skip picture, set this to false
     };
   },
   mounted() {
@@ -53,19 +60,39 @@ export default {
   },
   methods: {
     start() {
-      // alert("abc");
+      this.lastItem = null;
       this.interval = setInterval(() => {
+        // add last item
+        if (this.lastItem !== null) {
+          this.items.push(this.lastItem);
+        }
         this.isAnswered = false;
+        let question;
         //create a random number from 0 to 4
         const num = Math.floor(Math.random() * 5);
-        const path = `/sounds/${this.parts[num]}.m4a`;
-        this.answer = this.parts[num];
+        let path;
+        // set if add 'teacher say' or no
+        const ifTeacherSay = Math.floor(Math.random() * 9);
+        console.log("now if teacher say:" + ifTeacherSay);
+        if (ifTeacherSay > 7) {
+          path = `/sounds/${this.parts[num]}.m4a`;
+          question = this.result = this.parts[num];
+        } else {
+          // path = `/sounds/${this.parts[num]}_1.m4a`;
+          path = `/sounds/${this.parts[num]}.m4a`; // without teachersay, should skip
+          question = this.parts[num] + "_1";
+          this.answer = "skip";
+        }
+        // question is answer
+        this.lastItem = { question: question, answer: null, correct: 0 };
         this.playSound(path);
       }, 1000 * this.playInterval);
       this.isPlaying = true;
     },
     stop() {
       clearInterval(this.interval);
+      // history
+      console.log(this.items);
       this.isPlaying = false;
     },
     playSound(filePath) {
@@ -73,11 +100,11 @@ export default {
         src: filePath,
         volume: 0.5
       });
+      console.log("playing " + filePath);
       sound.play();
     },
     setChoice(item) {
       console.log(item);
-
       if (this.isPlaying) {
         if (this.isAnswered) {
           this.$notify({
@@ -86,11 +113,16 @@ export default {
           });
         } else {
           if (this.answer === item) {
+            // set last item result
+            this.lastItem.correct = 1;
+            this.lastItem.answer = item;
             this.$notify({
               title: this.$t("correct"),
               type: "success"
             });
           } else {
+            this.lastItem.correct = 0;
+            this.lastItem.answer = item;
             this.$notify({
               title: this.$t("wrong"),
               type: "error"
