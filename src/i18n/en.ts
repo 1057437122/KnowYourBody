@@ -9,4 +9,10 @@ export default {
   intervalTime: 'interval time',
   pleaseInputIntervalTime: 'please input interval time',
   clickToStart: 'click to start',
+  youHaveAnswered: ' You have answered ',
+  countQuestions: ' questions,',
+  including: ' including ',
+  countErrorQuestions: ' errors,',
+  countCorrectQuestions: ' correct,',
+  comeOn: ' Very Good!'
 }

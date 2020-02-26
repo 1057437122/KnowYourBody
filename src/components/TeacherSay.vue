@@ -12,6 +12,12 @@
           ></el-image>
         </el-col>
       </div>
+      <el-image
+        @click="setChoice('skip')"
+        style="width: 100px; height: 100px"
+        :src="'./images/skip.png'"
+        fit="fit"
+      ></el-image>
     </el-row>
 
     <el-form ref="form" label-width="100px">
@@ -41,7 +47,7 @@ export default {
     return {
       name: "MyFace",
       interval: null,
-      parts: ["boca", "nariz", "oreja", "mano", "ojo", "pierna", "pie"],
+      parts: ["boca", "nariz", "oreja", "mano", "ojo", "pierna", "pie", "pelo"],
       isPlaying: false,
       playInterval: 3,
       randImags: [],
@@ -60,6 +66,7 @@ export default {
   },
   methods: {
     start() {
+      this.randImags = _.shuffle(this.parts);
       this.lastItem = null;
       this.interval = setInterval(() => {
         // add last item
@@ -74,12 +81,13 @@ export default {
         // set if add 'teacher say' or no
         const ifTeacherSay = Math.floor(Math.random() * 9);
         console.log("now if teacher say:" + ifTeacherSay);
-        if (ifTeacherSay > 7) {
-          path = `/sounds/${this.parts[num]}.m4a`;
-          question = this.result = this.parts[num];
+        if (ifTeacherSay < 7) {
+          //this is right question, students should answer
+          path = `/sounds/${this.parts[num]}.wav`;
+          question = this.parts[num];
+          this.answer = question;
         } else {
-          // path = `/sounds/${this.parts[num]}_1.m4a`;
-          path = `/sounds/${this.parts[num]}.m4a`; // without teachersay, should skip
+          path = `/sounds/${this.parts[num]}_1.wav`; // without teachersay, should skip
           question = this.parts[num] + "_1";
           this.answer = "skip";
         }
