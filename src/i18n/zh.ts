@@ -14,5 +14,7 @@ export default {
   including: '其中 ',
   countErrorQuestions: '道错误,',
   countCorrectQuestions: '道正确,',
-  comeOn: '加油哦!'
+  comeOn: '加油哦!',
+  autoStopTime: '自动结束次数',
+  pleaseInputAutoStopTime: '请设置自动结束次数'
 }

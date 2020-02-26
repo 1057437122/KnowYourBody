@@ -28,6 +28,13 @@
           :disabled="isPlaying"
         ></el-input>
       </el-form-item>
+      <el-form-item :label="$t('autoStopTime')">
+        <el-input
+          :placeholder="$t('pleaseInputAutoStopTime')"
+          v-model="autoStopTime"
+          :disabled="isPlaying"
+        ></el-input>
+      </el-form-item>
       <el-form-item>
         <el-button @click="start" :disabled="isPlaying" type="primary">{{$t("start")}}</el-button>
         <el-button @click="stop" :disabled="!isPlaying" type="danger">{{$t("stop")}}</el-button>
@@ -56,7 +63,8 @@ export default {
       isAnswered: false,
       items: [],
       lastItem: null,
-      setSkip: true // if without skip picture, set this to false
+      skipClick: true, // if this is true, then must click 'skip' image when without 'teacher say',
+      autoStopTime: 5
     };
   },
   mounted() {
@@ -66,12 +74,33 @@ export default {
   },
   methods: {
     start() {
+      // check if parameter is set
+      if ((this.playInterval === "") | (this.playInterval === 0)) {
+        this.playInterval = 3;
+      }
+      if ((this.autoStopTime === "") | (this.autoStopTime === 0)) {
+        this.autoStopTime = 5;
+      }
       this.randImags = _.shuffle(this.parts);
       this.lastItem = null;
       this.interval = setInterval(() => {
         // add last item
         if (this.lastItem !== null) {
+          // fix skip result
+          if (
+            this.answer === "skip" &&
+            this.skipClick === false &&
+            this.lastItem.answer === null
+          ) {
+            this.lastItem.correct = 1;
+          }
           this.items.push(this.lastItem);
+        }
+        // check if reached auto stop times
+        if (this.items.length >= this.autoStopTime) {
+          this.stop();
+          console.log("reached times");
+          return;
         }
         this.isAnswered = false;
         let question;

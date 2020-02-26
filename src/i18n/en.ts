@@ -14,5 +14,7 @@ export default {
   including: ' including ',
   countErrorQuestions: ' errors,',
   countCorrectQuestions: ' correct,',
-  comeOn: ' Very Good!'
+  comeOn: ' Very Good!',
+  autoStopTime: 'auto stop times',
+  pleaseInputAutoStopTime: 'please set auto stop times'
 }
