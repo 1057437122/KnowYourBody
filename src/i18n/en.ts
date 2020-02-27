@@ -16,5 +16,17 @@ export default {
   countCorrectQuestions: ' correct,',
   comeOn: ' Very Good!',
   autoStopTime: 'auto stop times',
-  pleaseInputAutoStopTime: 'please set auto stop times'
+  pleaseInputAutoStopTime: 'please set auto stop times',
+  title: 'title',
+  pleasePlayGameFirst: 'please play game first',
+  ojo: 'eye',
+  oreja: 'ear',
+  nariz: 'noise',
+  pelo: 'hair',
+  mano: 'hand',
+  pierna: 'leg',
+  pie: 'foot',
+  boca: 'mouth',
+  skip: 'skip',
+  replay: 'replay',
 }

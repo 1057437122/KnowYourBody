@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
+    <img alt="Vue logo" style="width:130px" src="../assets/logo.png" />
     <TeacherSay :msg="msg" />
   </div>
 </template>

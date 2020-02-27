@@ -81,6 +81,8 @@ export default {
       if ((this.autoStopTime === "") | (this.autoStopTime === 0)) {
         this.autoStopTime = 5;
       }
+      //clear localstorage
+      localStorage.result = [];
       this.randImags = _.shuffle(this.parts);
       this.lastItem = null;
       this.interval = setInterval(() => {
@@ -130,7 +132,9 @@ export default {
       clearInterval(this.interval);
       // history
       console.log(this.items);
+      localStorage.result = JSON.stringify(this.items);
       this.isPlaying = false;
+      this.$router.push("/result");
     },
     playSound(filePath) {
       var sound = new Howl({

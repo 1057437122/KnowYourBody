@@ -16,5 +16,17 @@ export default {
   countCorrectQuestions: '道正确,',
   comeOn: '加油哦!',
   autoStopTime: '自动结束次数',
-  pleaseInputAutoStopTime: '请设置自动结束次数'
+  pleaseInputAutoStopTime: '请设置自动结束次数',
+  title: '标题',
+  pleasePlayGameFirst: '请先玩游戏',
+  ojo: '眼睛',
+  oreja: '耳朵',
+  nariz: '鼻子',
+  pelo: '头发',
+  mano: '手',
+  pierna: '腿',
+  pie: '脚',
+  boca: '嘴巴',
+  skip: '跳过',
+  replay: '再来一局',
 }
