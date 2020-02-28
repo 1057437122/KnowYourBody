@@ -29,4 +29,6 @@ export default {
   boca: 'mouth',
   skip: 'skip',
   replay: 'replay',
+  result: 'result',
+  yourRecordIs: 'puntuación:',
 }

@@ -64,7 +64,9 @@ export default {
       items: [],
       lastItem: null,
       skipClick: true, // if this is true, then must click 'skip' image when without 'teacher say',
-      autoStopTime: 5
+      autoStopTime: 5,
+      countQuestions: 0,
+      countCorrectQuestions: 0
     };
   },
   mounted() {
@@ -81,8 +83,9 @@ export default {
       if ((this.autoStopTime === "") | (this.autoStopTime === 0)) {
         this.autoStopTime = 5;
       }
-      //clear localstorage
-      localStorage.result = [];
+      //clear
+      this.countQuestions = 0;
+      this.countCorrectQuestions = 0;
       this.randImags = _.shuffle(this.parts);
       this.lastItem = null;
       this.interval = setInterval(() => {
@@ -104,6 +107,8 @@ export default {
           console.log("reached times");
           return;
         }
+        this.countQuestions += 1;
+
         this.isAnswered = false;
         let question;
         //create a random number from 0 to 4
@@ -132,9 +137,22 @@ export default {
       clearInterval(this.interval);
       // history
       console.log(this.items);
-      localStorage.result = JSON.stringify(this.items);
+      // count result
+      const res = (
+        (10 * this.countCorrectQuestions) /
+        this.countQuestions
+      ).toFixed(1);
+      this.$notify({
+        title: this.$t("result"),
+        message: this.$createElement(
+          "div",
+          { style: "color: green;font-size:30px;" },
+          this.$t("yourRecordIs") + res
+        ),
+        duration: 0,
+        type: "success"
+      });
       this.isPlaying = false;
-      this.$router.push("/result");
     },
     playSound(filePath) {
       var sound = new Howl({
@@ -161,6 +179,7 @@ export default {
               title: this.$t("correct"),
               type: "success"
             });
+            this.countCorrectQuestions += 1;
           } else {
             this.lastItem.correct = 0;
             this.lastItem.answer = item;

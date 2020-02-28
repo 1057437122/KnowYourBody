@@ -29,4 +29,6 @@ export default {
   boca: '嘴巴',
   skip: '跳过',
   replay: '再来一局',
+  result: '结果',
+  yourRecordIs: 'puntuación:',
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="result">
-    <img alt="Vue logo" style="width:130px" src="../assets/logo.png" />
+    <img alt="teacher say" style="width:200px" src="../assets/logo.png" />
     <div
       class="summary"
     >{{ $t('youHaveAnswered')+countQuestions+$t('countQuestions')+$t('including')+ countCorrectQuestions+$t('countCorrectQuestions')+countErrorQuestions+$t('countErrorQuestions')+$t('comeOn') }}</div>
@@ -71,7 +71,7 @@ export default Vue.extend({
       localStorage.clear();
       this.$router.push("/teacher-say");
     },
-    tableRowClassName({ row, rowIndex }) {
+    tableRowClassName({ row }) {
       console.log(row);
       if (row.correct === 1) {
         return "warning-row";
