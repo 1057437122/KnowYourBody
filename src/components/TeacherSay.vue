@@ -7,7 +7,7 @@
           <el-image
             @click="setChoice(item)"
             style="width: 100px; height: 100px"
-            :src="'./images/'+item+'.png'"
+            :src="require(`@/assets/images/${item}.png`)"
             fit="fit"
           ></el-image>
         </el-col>
@@ -15,7 +15,7 @@
       <el-image
         @click="setChoice('skip')"
         style="width: 100px; height: 100px"
-        :src="'./images/skip.png'"
+        :src="require(`@/assets/images/skip.png`)"
         fit="fit"
       ></el-image>
     </el-row>
@@ -119,11 +119,11 @@ export default {
         console.log("now if teacher say:" + ifTeacherSay);
         if (ifTeacherSay < 7) {
           //this is right question, students should answer
-          path = `/sounds/${this.parts[num]}.wav`;
+          path = require(`@/assets/sounds/${this.parts[num]}.wav`);
           question = this.parts[num];
           this.answer = question;
         } else {
-          path = `/sounds/${this.parts[num]}_1.wav`; // without teachersay, should skip
+          path = require(`@/assets/sounds/${this.parts[num]}_1.wav`); // without teachersay, should skip
           question = this.parts[num] + "_1";
           this.answer = "skip";
         }
