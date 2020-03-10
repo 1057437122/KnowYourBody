@@ -1,5 +1,11 @@
 <template>
   <div class="teacherSay">
+    <el-progress
+      :percentage="percentage"
+      :text-inside="false"
+      :show-text="false"
+      :color="customColors"
+    ></el-progress>
     <h1>{{ msg }}</h1>
     <el-row>
       <div v-for="item in randImags" :key="item">
@@ -56,7 +62,7 @@ export default {
       interval: null,
       parts: ["boca", "nariz", "oreja", "mano", "ojo", "pierna", "pie", "pelo"],
       isPlaying: false,
-      playInterval: 3,
+      playInterval: 5,
       randImags: [],
       containerLength: 0,
       answer: null,
@@ -64,9 +70,18 @@ export default {
       items: [],
       lastItem: null,
       skipClick: true, // if this is true, then must click 'skip' image when without 'teacher say',
-      autoStopTime: 5,
+      autoStopTime: 20,
       countQuestions: 0,
-      countCorrectQuestions: 0
+      countCorrectQuestions: 0,
+      percentage: 0,
+      customColors: [
+        { color: "#f56c6c", percentage: 100 },
+        { color: "#e6a23c", percentage: 80 },
+        { color: "#5cb87a", percentage: 60 },
+        { color: "#1989fa", percentage: 40 },
+        { color: "#6f7ad3", percentage: 20 }
+      ],
+      progressInterval: null
     };
   },
   mounted() {
@@ -75,61 +90,77 @@ export default {
     this.containerLength = Math.ceil(this.randImags.length / 3);
   },
   methods: {
+    clear() {
+      this.progressBarStop();
+      this.items = [];
+      this.isPlaying = false;
+      this.countQuestions = 0;
+      this.countCorrectQuestions = 0;
+      this.lastItem = null;
+      this.isAnswered = false;
+      this.answer = null;
+      this.percentage = 0;
+    },
+    processQuestion() {
+      // add last item
+      if (this.lastItem !== null) {
+        // fix skip result
+        if (
+          this.answer === "skip" &&
+          this.skipClick === false &&
+          this.lastItem.answer === null
+        ) {
+          this.lastItem.correct = 1;
+        }
+        this.items.push(this.lastItem);
+      }
+      // check if reached auto stop times
+      if (this.items.length >= this.autoStopTime) {
+        this.stop();
+        console.log("reached times");
+        return;
+      }
+      this.countQuestions += 1;
+      this.progressBarStop();
+
+      this.isAnswered = false;
+      // reset progressBar
+      this.progressBarStart();
+      let question;
+      //create a random number from 0 to 4
+      const num = Math.floor(Math.random() * 5);
+      let path;
+      // set if add 'teacher say' or no
+      const ifTeacherSay = Math.floor(Math.random() * 9);
+      console.log("now if teacher say:" + ifTeacherSay);
+      if (ifTeacherSay < 7) {
+        //this is right question, students should answer
+        path = require(`@/assets/sounds/${this.parts[num]}.wav`);
+        question = this.parts[num];
+        this.answer = question;
+      } else {
+        path = require(`@/assets/sounds/${this.parts[num]}_1.wav`); // without teachersay, should skip
+        question = this.parts[num] + "_1";
+        this.answer = "skip";
+      }
+      // question is answer
+      this.lastItem = { question: question, answer: null, correct: 0 };
+      this.playSound(path);
+    },
     start() {
       // check if parameter is set
-      if ((this.playInterval === "") | (this.playInterval === 0)) {
+      if ((this.playInterval === "") | (this.playInterval < 3)) {
         this.playInterval = 3;
       }
       if ((this.autoStopTime === "") | (this.autoStopTime === 0)) {
         this.autoStopTime = 5;
       }
-      //clear
-      this.countQuestions = 0;
-      this.countCorrectQuestions = 0;
+      //clear and create random images
+      this.clear();
       this.randImags = _.shuffle(this.parts);
-      this.lastItem = null;
+      // each question handler
       this.interval = setInterval(() => {
-        // add last item
-        if (this.lastItem !== null) {
-          // fix skip result
-          if (
-            this.answer === "skip" &&
-            this.skipClick === false &&
-            this.lastItem.answer === null
-          ) {
-            this.lastItem.correct = 1;
-          }
-          this.items.push(this.lastItem);
-        }
-        // check if reached auto stop times
-        if (this.items.length >= this.autoStopTime) {
-          this.stop();
-          console.log("reached times");
-          return;
-        }
-        this.countQuestions += 1;
-
-        this.isAnswered = false;
-        let question;
-        //create a random number from 0 to 4
-        const num = Math.floor(Math.random() * 5);
-        let path;
-        // set if add 'teacher say' or no
-        const ifTeacherSay = Math.floor(Math.random() * 9);
-        console.log("now if teacher say:" + ifTeacherSay);
-        if (ifTeacherSay < 7) {
-          //this is right question, students should answer
-          path = require(`@/assets/sounds/${this.parts[num]}.wav`);
-          question = this.parts[num];
-          this.answer = question;
-        } else {
-          path = require(`@/assets/sounds/${this.parts[num]}_1.wav`); // without teachersay, should skip
-          question = this.parts[num] + "_1";
-          this.answer = "skip";
-        }
-        // question is answer
-        this.lastItem = { question: question, answer: null, correct: 0 };
-        this.playSound(path);
+        this.processQuestion();
       }, 1000 * this.playInterval);
       this.isPlaying = true;
     },
@@ -152,7 +183,7 @@ export default {
         duration: 0,
         type: "success"
       });
-      this.isPlaying = false;
+      this.clear();
     },
     playSound(filePath) {
       var sound = new Howl({
@@ -161,6 +192,21 @@ export default {
       });
       console.log("playing " + filePath);
       sound.play();
+    },
+    progressBarStart() {
+      this.percentage = 0;
+      // progress bar
+      // const start = 0;
+      this.progressInterval = setInterval(() => {
+        if (this.percentage >= 100) {
+          this.progressBarStop();
+        }
+        this.percentage += 100 / (this.playInterval * 10);
+      }, 100);
+    },
+    progressBarStop() {
+      this.percentage = 100;
+      clearInterval(this.progressInterval);
     },
     setChoice(item) {
       console.log(item);

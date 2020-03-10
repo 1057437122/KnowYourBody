@@ -4,7 +4,7 @@
     <div
       class="summary"
     >{{ $t('youHaveAnswered')+countQuestions+$t('countQuestions')+$t('including')+ countCorrectQuestions+$t('countCorrectQuestions')+countErrorQuestions+$t('countErrorQuestions')+$t('comeOn') }}</div>
-    <el-table stripe :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
+    <el-table stripe :data="tableData" style="width: 100%">
       <el-table-column label="Q">
         <template slot-scope="scope">{{ $t(scope.row.question) }}</template>
       </el-table-column>
@@ -70,15 +70,6 @@ export default Vue.extend({
     replay() {
       localStorage.clear();
       this.$router.push("/teacher-say");
-    },
-    tableRowClassName({ row }) {
-      console.log(row);
-      if (row.correct === 1) {
-        return "warning-row";
-      } else {
-        return "success-row";
-      }
-      return "";
     }
   }
 });
